@@ -71,14 +71,13 @@ def train_test(train_set, test_set, feature_attr):
         elif M[i] > 0:
             pre_y[i] = 1
 
-    return accuracy_score(pre_y, test_set[:, -1].astype(int)), roc_auc_score(pre_y, test_set[:, -1].astype(int)), \
+    return accuracy_score(pre_y, test_set[:, -1].astype(int)), \
         matthews_corrcoef(pre_y, test_set[:, -1].astype(int)), sen(pre_y, test_set[:, -1].astype(int)), \
         spe(pre_y, test_set[:, -1].astype(int))
 
 
 def cross_validation(data, feature_attr):
     ACC = []
-    AUC = []
     MCC = []
     SN = []
     SP = []
@@ -87,20 +86,18 @@ def cross_validation(data, feature_attr):
     kf = KFold(n_splits=10, shuffle=True)
     for train_index, test_index in kf.split(X=data[:, :-1], y=data[:, -1], groups=data[:, -1]):
         train_set, test_set = data[train_index], data[test_index]
-        acc, auc, mcc, sn, sp = train_test(train_set, test_set, feature_attr)
+        acc, mcc, sn, sp = train_test(train_set, test_set, feature_attr)
         ACC.append(acc)
-        AUC.append(auc)
         MCC.append(mcc)
         SN.append(sn)
         SP.append(sp)
         print("ROUND[{0}] accuracy score: {1}".format(str(num + 1), str(acc)))
-        print("ROUND[{0}] accuracy score: {1}".format(str(num + 1), str(auc)))
         print("ROUND[{0}] accuracy score: {1}".format(str(num + 1), str(mcc)))
         print("ROUND[{0}] accuracy score: {1}".format(str(num + 1), str(sn)))
         print("ROUND[{0}] accuracy score: {1}".format(str(num + 1), str(sp)))
         print("============================================")
         num += 1
-    return np.mean(ACC), np.mean(AUC), np.mean(MCC), np.mean(SN), np.mean(SP)
+    return np.mean(ACC), np.mean(MCC), np.mean(SN), np.mean(SP)
 
 
 if __name__ == "__main__":
@@ -119,10 +116,9 @@ if __name__ == "__main__":
     data = np.hstack((feature, np.array(data.iloc[:, 0]).reshape(-1, 1)))
     print(data.shape)
 
-    res, auc, mcc, sn, sp = cross_validation(data, feature_attr)
+    res, mcc, sn, sp = cross_validation(data, feature_attr)
 
     print("FINAL accuracy score: {0}".format(str(res)[:6]))
-    print("FINAL accuracy score: {0}".format(str(auc)[:6]))
     print("FINAL accuracy score: {0}".format(str(mcc)[:6]))
     print("FINAL accuracy score: {0}".format(str(sn)[:6]))
     print("FINAL accuracy score: {0}".format(str(sp)[:6]))
