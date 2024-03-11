@@ -4,7 +4,7 @@ warnings.filterwarnings('ignore')
 from MultinomialRF import MultinomialRF
 import numpy as np
 from sklearn.model_selection import KFold
-from sklearn.metrics import accuracy_score, confusion_matrix, roc_auc_score, matthews_corrcoef
+from sklearn.metrics import accuracy_score, confusion_matrix, matthews_corrcoef
 import pandas as pd
 
 
@@ -48,7 +48,6 @@ def train_test(train_set, test_set, feature_attr):
     M = []
     for i in range(len(An)):
         K = []
-        # 求K
         for xi in predict_result:
             count = 0
             for l in range(len(xi)):
@@ -71,9 +70,9 @@ def train_test(train_set, test_set, feature_attr):
         elif M[i] > 0:
             pre_y[i] = 1
 
-    return accuracy_score(pre_y, test_set[:, -1].astype(int)), \
-        matthews_corrcoef(pre_y, test_set[:, -1].astype(int)), sen(pre_y, test_set[:, -1].astype(int)), \
-        spe(pre_y, test_set[:, -1].astype(int))
+    return accuracy_score(test_set[:, 0].astype(int), pre_y), \
+        matthews_corrcoef(test_set[:, 0].astype(int), pre_y), sen( test_set[:, 0].astype(int), pre_y), \
+        spe(test_set[:, 0].astype(int), pre_y)
 
 
 def cross_validation(data, feature_attr):
@@ -91,10 +90,10 @@ def cross_validation(data, feature_attr):
         MCC.append(mcc)
         SN.append(sn)
         SP.append(sp)
-        print("ROUND[{0}] accuracy score: {1}".format(str(num + 1), str(acc)))
-        print("ROUND[{0}] accuracy score: {1}".format(str(num + 1), str(mcc)))
-        print("ROUND[{0}] accuracy score: {1}".format(str(num + 1), str(sn)))
-        print("ROUND[{0}] accuracy score: {1}".format(str(num + 1), str(sp)))
+        print("ROUND[{0}] ACC: {1}".format(str(num + 1), str(acc)))
+        print("ROUND[{0}] MCC: {1}".format(str(num + 1), str(mcc)))
+        print("ROUND[{0}]  SN: {1}".format(str(num + 1), str(sn)))
+        print("ROUND[{0}]  SP: {1}".format(str(num + 1), str(sp)))
         print("============================================")
         num += 1
     return np.mean(ACC), np.mean(MCC), np.mean(SN), np.mean(SP)
@@ -118,7 +117,7 @@ if __name__ == "__main__":
 
     res, mcc, sn, sp = cross_validation(data, feature_attr)
 
-    print("FINAL accuracy score: {0}".format(str(res)[:6]))
-    print("FINAL accuracy score: {0}".format(str(mcc)[:6]))
-    print("FINAL accuracy score: {0}".format(str(sn)[:6]))
-    print("FINAL accuracy score: {0}".format(str(sp)[:6]))
+    print("FINAL ACC: {0}".format(str(res)[:6]))
+    print("FINAL MCC: {0}".format(str(mcc)[:6]))
+    print("FINAL  SN: {0}".format(str(sn)[:6]))
+    print("FINAL  SP: {0}".format(str(sp)[:6]))
